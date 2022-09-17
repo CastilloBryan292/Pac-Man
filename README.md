@@ -1,5 +1,7 @@
 # Pac-Man
-Recreation of the classic arcade game Pac-Man in python using the pygame library.  
+Recreation of the classic arcade game Pac-Man in python using the pygame library. 
+To play the game you must first open main and hit run.
+All other files should be ignored and not edited.
 
 Controls: 
 To control Pac-Man you must use the arrow keys 
