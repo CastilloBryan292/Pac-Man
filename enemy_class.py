@@ -168,59 +168,17 @@ class Enemy:
     def get_sprites(self):
         # Determines what sprites to use based off of what ghost it is
         # Ex. if ghost is blinky it will load blinky's sprites
-        sprite_list = []
 
-        if self.ghost == "blinky":
-            sprite_list = [ pygame.image.load(path + "\png files\Blinky_animations\Blinky_2.PNG"), 
-                            pygame.image.load(path + "\png files\Blinky_animations\Blinky_4.PNG"),  
-                            pygame.image.load(path + "\png files\Blinky_animations\Blinky_6.PNG"), 
-                            pygame.image.load(path + "\png files\Blinky_animations\Blinky_8.PNG"), 
-                            pygame.image.load(path + "\png files\Frightened_animations\Frightened_2.PNG"), 
-                            pygame.image.load(path + "\png files\Frightened_animations\Frightened_4.PNG"),
-                            pygame.image.load(path + "\png files\eaten_animations\eaten_1.PNG"), 
-                            pygame.image.load(path + "\png files\eaten_animations\eaten_2.PNG"), 
-                            pygame.image.load(path + "\png files\eaten_animations\eaten_3.PNG"), 
-                            pygame.image.load(path + "\png files\eaten_animations\eaten_4.PNG")]
-            
-                
-        elif self.ghost == "pinky":
-            sprite_list = [ pygame.image.load(path + "\png files\pinky_animations\pinky_2.PNG"),
-                            pygame.image.load(path + "\png files\pinky_animations\pinky_4.PNG"),
-                            pygame.image.load(path + "\png files\pinky_animations\pinky_6.PNG"),
-                            pygame.image.load(path + "\png files\pinky_animations\pinky_8.PNG"),
-                            pygame.image.load(path + "\png files\Frightened_animations\Frightened_2.PNG"), 
-                            pygame.image.load(path + "\png files\Frightened_animations\Frightened_4.PNG"),
-                            pygame.image.load(path + "\png files\eaten_animations\eaten_1.PNG"), 
-                            pygame.image.load(path + "\png files\eaten_animations\eaten_2.PNG"), 
-                            pygame.image.load(path + "\png files\eaten_animations\eaten_3.PNG"), 
-                            pygame.image.load(path + "\png files\eaten_animations\eaten_4.PNG")]
-
-        
-        elif self.ghost == "inky":
-            sprite_list = [ pygame.image.load(path + "\png files\inky_animations\inky_2.PNG"),
-                            pygame.image.load(path + "\png files\inky_animations\inky_4.PNG"),
-                            pygame.image.load(path + "\png files\inky_animations\inky_6.PNG"),
-                            pygame.image.load(path + "\png files\inky_animations\inky_8.PNG"),
-                            pygame.image.load(path + "\png files\Frightened_animations\Frightened_2.PNG"), 
-                            pygame.image.load(path + "\png files\Frightened_animations\Frightened_4.PNG"),
-                            pygame.image.load(path + "\png files\eaten_animations\eaten_1.PNG"),
-                            pygame.image.load(path + "\png files\eaten_animations\eaten_2.PNG"), 
-                            pygame.image.load(path + "\png files\eaten_animations\eaten_3.PNG"), 
-                            pygame.image.load(path + "\png files\eaten_animations\eaten_4.PNG")] 
-
-                            
-        elif self.ghost == "clyde":
-            sprite_list = [ pygame.image.load(path + "\png files\clyde_animations\clyde_2.PNG"),
-                            pygame.image.load(path + "\png files\clyde_animations\clyde_4.PNG"),
-                            pygame.image.load(path + "\png files\clyde_animations\clyde_6.PNG"),
-                            pygame.image.load(path + "\png files\clyde_animations\clyde_8.PNG"),
-                            pygame.image.load(path + "\png files\Frightened_animations\Frightened_2.PNG"), 
-                            pygame.image.load(path + "\png files\Frightened_animations\Frightened_4.PNG"),
-                            pygame.image.load(path + "\png files\eaten_animations\eaten_1.PNG"),
-                            pygame.image.load(path + "\png files\eaten_animations\eaten_2.PNG"),  
-                            pygame.image.load(path + "\png files\eaten_animations\eaten_3.PNG"),
-                            pygame.image.load(path + "\png files\eaten_animations\eaten_4.PNG")] 
-
+        sprite_list = [ pygame.image.load(path + fr"\png files\{self.ghost}_animations\{self.ghost}_2.PNG"),
+                        pygame.image.load(path + fr"\png files\{self.ghost}_animations\{self.ghost}_4.PNG"),
+                        pygame.image.load(path + fr"\png files\{self.ghost}_animations\{self.ghost}_6.PNG"),
+                        pygame.image.load(path + fr"\png files\{self.ghost}_animations\{self.ghost}_8.PNG"),
+                        pygame.image.load(path + "\png files\Frightened_animations\Frightened_2.PNG"), 
+                        pygame.image.load(path + "\png files\Frightened_animations\Frightened_4.PNG"),
+                        pygame.image.load(path + "\png files\eaten_animations\eaten_1.PNG"), 
+                        pygame.image.load(path + "\png files\eaten_animations\eaten_2.PNG"), 
+                        pygame.image.load(path + "\png files\eaten_animations\eaten_3.PNG"), 
+                        pygame.image.load(path + "\png files\eaten_animations\eaten_4.PNG")]
 
         return sprite_list
     
@@ -374,8 +332,7 @@ class Enemy:
                 # This is also a good time to play the ghost sound effects
                 if self.ghost == "blinky" and not self.pellet_siren_playing:
                     self.ghost_sound.play()
-
-                    
+  
                 # If ghost is at an intersection then he is allowed to move/change directions
                 if (self.pix_pos[0]-10, self.pix_pos[1]-10) in self.intersections:
                     return True
@@ -610,53 +567,37 @@ class Enemy:
 
     def play_animation(self):
 
-        if self.state == "chase" or self.state == "scatter" or self.state == "idle":
-            
+        if self.state == "chase" or self.state == "scatter" or self.state == "idle":  
             if self.direction == left:
-                self.curr_index = 0
-                self.curr_sprite = self.sprites[self.curr_index]        
-            
+                self.curr_index = 0      
 
             elif self.direction == right:
                 self.curr_index = 1    
-                self.curr_sprite = self.sprites[self.curr_index]
-
 
             elif self.direction == up:
                 self.curr_index = 2    
-                self.curr_sprite = self.sprites[self.curr_index]
-            
 
             elif self.direction == down:
                 self.curr_index = 3
-                self.curr_sprite = self.sprites[self.curr_index]
-
 
         elif self.state == "frightened":
             self.curr_index = 4
-            self.curr_sprite = self.sprites[self.curr_index]
-
 
         elif self.state == "eaten":
             
             if self.direction == left:
-                self.curr_index = 6
-                self.curr_sprite = self.sprites[self.curr_index]        
-            
+                self.curr_index = 6        
 
             elif self.direction == right:
                 self.curr_index = 7    
-                self.curr_sprite = self.sprites[self.curr_index]
-
 
             elif self.direction == up:
                 self.curr_index = 8   
-                self.curr_sprite = self.sprites[self.curr_index]
-            
-
+    
             elif self.direction == down:
                 self.curr_index = 9
-                self.curr_sprite = self.sprites[self.curr_index]            
+
+        self.curr_sprite = self.sprites[self.curr_index]             
 
 
 
