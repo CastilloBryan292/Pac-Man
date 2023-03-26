@@ -54,6 +54,9 @@ class Player:
         self.waka.set_volume(0.8)
         self.extra_life = mixer.Sound(path + "\ogg files\extra_life.ogg")
         self.death_sound = mixer.Sound(path + "\ogg files\death_sound.ogg")
+
+        # Test
+        self.wall_pos_list = [185, 275]
         
         
 ########################### Update ########################
@@ -65,7 +68,8 @@ class Player:
         
         if self.time_to_move():
             if self.stored_direction:
-                self.direction = self.stored_direction
+                if self.space_is_available(self.stored_direction):
+                    self.direction = self.stored_direction
 
 
         # Pac-Man sprite
@@ -111,7 +115,28 @@ class Player:
             
             if self.direction == up or self.direction == down or self.direction == still:
                 return True
+
+
+    def space_is_available(self, stored_direction):
+
+        if stored_direction == up:
+            if (int(self.pix_pos[0] - 10), int(self.pix_pos[1] - 30)) not in self.wall_pos_list:
+                return True
             
+        elif stored_direction == down:
+            if (int(self.pix_pos[0] - 10), int(self.pix_pos[1] + 10)) not in self.wall_pos_list:
+                return True
+            
+        elif stored_direction == left:
+            if (int(self.pix_pos[0] - 30), int(self.pix_pos[1] - 10)) not in self.wall_pos_list:
+                return True
+            
+        elif stored_direction == right:
+            if (int(self.pix_pos[0] + 10), int(self.pix_pos[1] - 10)) not in self.wall_pos_list:
+                return True
+            
+        return False
+    
 
     def off_screen_handler(self):   
         if self.pix_pos[0] < 35:
@@ -135,6 +160,7 @@ class Player:
         self.pix_pos = self.get_pix_pos()
         self.stored_direction = None
         self.direction = left
+        self.wall_pos_list.clear()
 
         # Gameplay
         self.lives = 2
@@ -173,6 +199,7 @@ class Player:
         self.pix_pos = self.get_pix_pos()
         self.stored_direction = None
         self.direction = left
+        self.wall_pos_list.clear()
 
         # Animation
         self.curr_index = 0
@@ -196,6 +223,10 @@ class Player:
         (self.grid_pos[0] * self.app.cell_width + top_bottom_buffer//2, \
         self.grid_pos[1] * self.app.cell_height + top_bottom_buffer//2, \
         self.app.cell_width, self.app.cell_height), 1)
+
+
+    def set_walls_list(self, wall_list):
+        self.wall_pos_list = wall_list 
         
     
 ########################## Animation #######################################
@@ -248,21 +279,5 @@ class Player:
                 pygame.image.load(path + "\png files\death_animations\pixil-frame-12.png"),
                 pygame.image.load(path + "\png files\death_animations\pixil-frame-13.png")]
 
-
-        
-
-
-
-
-
-
-
-
-
-
-
-    
-
-                
 
         

@@ -10,6 +10,7 @@ from enemy_class import *
 
 
 pygame.init()
+pygame.joystick.init()
 vec = pygame.math.Vector2
 
 class App:
@@ -30,6 +31,7 @@ class App:
         # Music
         mixer.music.load(path + "\ogg files\Pac-man-theme-remix.ogg")
         mixer.music.play(-1)
+
 
         # Chimes
         self.pause_chime = mixer.Sound(path + "\ogg files\pause_chime.ogg")
@@ -77,7 +79,10 @@ class App:
         self.pellets_counted = False
         self.generated_walls = False
         self.generated_pellets = False
-        self.maze = self.get_mazes() 
+        self.maze = self.get_mazes()
+
+        # Controller Support
+        self.joysticks = [pygame.joystick.Joystick(i) for i in range(pygame.joystick.get_count())]
         
         # TEST
         
@@ -120,6 +125,14 @@ class App:
                 mixer.music.pause()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_q:
                 self.running = False
+                
+            # Controller Support
+            if event.type == pygame.JOYBUTTONDOWN:
+                if event.button == 7:
+                    self.state = "playing"
+                    mixer.music.pause()
+                if event.button == 1:
+                    self.running = False
 
 
     def start_draw(self):
@@ -158,6 +171,22 @@ class App:
                     self.pause_chime.play()
                     self.pause()
 
+            # Controller Support
+            if event.type == pygame.JOYHATMOTION:
+                if event.value[0] == 1:
+                    self.player.move(right)
+                elif event.value[0] == -1:
+                    self.player.move(left)
+                elif event.value[1] == 1:
+                    self.player.move(up)
+                elif event.value[1] == -1:
+                    self.player.move(down)
+                    
+            if event.type == pygame.JOYBUTTONDOWN:
+                if event.button == 7:
+                    self.pause_chime.play()
+                    self.pause()
+                        
 
     def playing_update(self):
         self.game_over_checker()
@@ -301,6 +330,16 @@ class App:
                     elif event.key == pygame.K_q:
                         paused = False
                         self.reset()
+
+                # Controller Support
+                if event.type == pygame.JOYBUTTONDOWN:
+                    if event.button == 7:
+                        paused = False
+                        mixer.music.pause()
+                        self.pause_chime.play()
+                    elif event.button == 1:
+                        paused = False
+                        self.reset()
             
             self.screen.fill(black)
             self.draw_pause()
@@ -319,8 +358,14 @@ class App:
                     self.reset()
                 if event.key == pygame.K_SPACE:
                     self.reset("playing")
-    
 
+            # Controller Support
+            if event.type == pygame.JOYBUTTONDOWN:
+                if event.button == 7:
+                    self.reset("playing")
+                if event.button == 1:
+                    self.reset()
+    
 
     def game_over_draw(self):
         if self.state == "start":
@@ -353,6 +398,14 @@ class App:
                     self.reset()
                 if event.key == pygame.K_SPACE:
                     self.reset("playing")
+
+            # Contoller Support
+            if event.type == pygame.JOYBUTTONDOWN:
+                if event.button == 7:
+                    self.reset("playing")
+                if event.button == 1:
+                    self.reset()
+
 
     def win_draw(self):
         if self.state == "start":
@@ -630,6 +683,8 @@ class App:
 
         for enemy in self.enemy_list:
             enemy.set_walls_pos(self.walls_pix_pos)
+
+        self.player.set_walls_list(self.walls_pix_pos)
 
 
     def generate_pellets(self, maze):
