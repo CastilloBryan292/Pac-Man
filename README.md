@@ -8,7 +8,7 @@ User Prompts: For any other functions, the game will provide prompts for your co
 
 Enjoy the classic Pac-Man experience!
 
-![Menu Screen](img/Screenshot 2024-04-25 203941.png)
-![Gameplay_1](img/Screenshot 2024-04-25 204231.png)
-![Gameplay_2](Screenshot 2024-04-25 204338.png)
+![Menu Screen](img/Screenshot%202024-04-25%20203941.png)
+![Gameplay_1](img/Screenshot%202024-04-25%20204231.png)
+![Gameplay_2](img/Screenshot%202024-04-25%20204338.png)
 
