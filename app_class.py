@@ -10,6 +10,7 @@ from enemy_class import *
 
 
 pygame.init()
+pygame.joystick.init()
 vec = pygame.math.Vector2
 
 class App:
@@ -30,6 +31,7 @@ class App:
         # Music
         mixer.music.load(path + "\ogg files\Pac-man-theme-remix.ogg")
         mixer.music.play(-1)
+
 
         # Chimes
         self.pause_chime = mixer.Sound(path + "\ogg files\pause_chime.ogg")
@@ -77,7 +79,13 @@ class App:
         self.pellets_counted = False
         self.generated_walls = False
         self.generated_pellets = False
-        self.maze = self.get_mazes() 
+        self.maze = self.get_mazes()
+        self.sp_blink_counter = 0
+        self.sp_blink_interval = 20
+        self.sp_blinked = False
+
+        # Controller Support
+        self.joysticks = [pygame.joystick.Joystick(i) for i in range(pygame.joystick.get_count())]
         
         # TEST
         
@@ -120,6 +128,14 @@ class App:
                 mixer.music.pause()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_q:
                 self.running = False
+                
+            # Controller Support
+            if event.type == pygame.JOYBUTTONDOWN:
+                if event.button == 7:
+                    self.state = "playing"
+                    mixer.music.pause()
+                if event.button == 1:
+                    self.running = False
 
 
     def start_draw(self):
@@ -158,6 +174,22 @@ class App:
                     self.pause_chime.play()
                     self.pause()
 
+            # Controller Support
+            if event.type == pygame.JOYHATMOTION:
+                if event.value[0] == 1:
+                    self.player.move(right)
+                elif event.value[0] == -1:
+                    self.player.move(left)
+                elif event.value[1] == 1:
+                    self.player.move(up)
+                elif event.value[1] == -1:
+                    self.player.move(down)
+                    
+            if event.type == pygame.JOYBUTTONDOWN:
+                if event.button == 7:
+                    self.pause_chime.play()
+                    self.pause()
+                        
 
     def playing_update(self):
         self.game_over_checker()
@@ -194,9 +226,13 @@ class App:
             
             enemy.update(self.player.pix_pos, self.player.direction, self.blinky.pix_pos)
 
+            if self.timer.start_blinking:
+                enemy.start_blinking = True
+            else:
+                enemy.start_blinking = False
 
         if not self.timer.enemy_state_timer() == "frightened":
-                self.blinky.pellet_siren_playing = False
+            self.blinky.pellet_siren_playing = False
 
 
     def playing_draw(self):
@@ -301,6 +337,16 @@ class App:
                     elif event.key == pygame.K_q:
                         paused = False
                         self.reset()
+
+                # Controller Support
+                if event.type == pygame.JOYBUTTONDOWN:
+                    if event.button == 7:
+                        paused = False
+                        mixer.music.pause()
+                        self.pause_chime.play()
+                    elif event.button == 1:
+                        paused = False
+                        self.reset()
             
             self.screen.fill(black)
             self.draw_pause()
@@ -319,8 +365,14 @@ class App:
                     self.reset()
                 if event.key == pygame.K_SPACE:
                     self.reset("playing")
-    
 
+            # Controller Support
+            if event.type == pygame.JOYBUTTONDOWN:
+                if event.button == 7:
+                    self.reset("playing")
+                if event.button == 1:
+                    self.reset()
+    
 
     def game_over_draw(self):
         if self.state == "start":
@@ -353,6 +405,14 @@ class App:
                     self.reset()
                 if event.key == pygame.K_SPACE:
                     self.reset("playing")
+
+            # Contoller Support
+            if event.type == pygame.JOYBUTTONDOWN:
+                if event.button == 7:
+                    self.reset("playing")
+                if event.button == 1:
+                    self.reset()
+
 
     def win_draw(self):
         if self.state == "start":
@@ -579,7 +639,7 @@ class App:
                     pel.value_added = True
 
                     # Checks if a new life needs to be added
-                    if self.score >= self.last_score + 2000:
+                    if self.score >= self.last_score + 3000:
                         if self.player.lives < 3:
                             self.player.lives += 1
                             self.player.extra_life.play()
@@ -589,13 +649,14 @@ class App:
                     # Checks if the eaten pellet was a super pellet
                     if pel.pellet_type() == "super_pellet":
                         self.timer.enemy_state = "frightened"
-                        pel.power_pellet_sound.play()
+                        pel.power_pellet_sound.play() 
                         self.blinky.pellet_siren_playing = True
                         
                         for enemy in self.enemy_list:
                             if not enemy.state == "eaten" and not enemy.state == "idle":
                                 enemy.has_flipped = False
                                 enemy.set_enemy_state("frightened")
+
                 
 
 
@@ -630,6 +691,8 @@ class App:
 
         for enemy in self.enemy_list:
             enemy.set_walls_pos(self.walls_pix_pos)
+
+        self.player.set_walls_list(self.walls_pix_pos)
 
 
     def generate_pellets(self, maze):
@@ -685,13 +748,19 @@ class App:
     
         # Playing State
         else:
+            self.sp_blink_counter += 1
+            if self.sp_blink_counter >= self.sp_blink_interval:
+                self.sp_blink_counter = 0
+                self.sp_blinked = not self.sp_blinked
+        
             for pell in self.pellets_list:
                 if not pell.eaten:
                     if pell.pellet_type() == "pellet":
                         pell.draw_pellet(self.screen, self.pellet)
 
                     else:
-                        pell.draw_super_pellet(self.screen, self.super_pellet)
+                        if self.sp_blinked:
+                            pell.draw_super_pellet(self.screen, self.super_pellet)  
 
 
      

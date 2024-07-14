@@ -30,6 +30,8 @@ class Timer:
         # Frightened Timer
         self.frightened_timer = self.counter//100
         self.frightened_timer_set = False
+        self.blink_timer = self.frightened_timer
+        self.start_blinking = False
         
         
     def run_timer(self):
@@ -125,11 +127,18 @@ class Timer:
 
             # Sets frightened mode to last for 5 seconds
             # Makes chase_scatter_timer to accomadate for this
+            # Also sets timer for enemies to blink for player warning
             if not self.frightened_timer_set:
-                self.frightened_timer = self.counter//100 - 5
-                self.chase_scatter_timer -= 5
+                self.frightened_timer = self.counter//100 - 6
+                self.chase_scatter_timer -= 6
                 self.frightened_timer_set = True
+                self.blink_timer = self.frightened_timer + 2
 
+
+            # Give player warning 
+            if self.counter//100 ==  self.blink_timer:
+                self.start_blinking = True
+                
 
             # Checks if 5 seconds has passed
             # If it has, then enemies go back to the state (either chase or scatter)
@@ -137,6 +146,7 @@ class Timer:
             if self.counter//100 == self.frightened_timer:
                 self.enemy_state = self.enemy_state_list[self.index]
                 self.frightened_timer_set = False
+                self.start_blinking = False
 
 
             # Handles bug when all 4 enemies would get eaten then

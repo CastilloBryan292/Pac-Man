@@ -7,8 +7,9 @@ path = os.getcwd()
 
 # screen settings
 # 610, 670
+# fps - 60
 width, height = 610, 670
-fps = 60
+fps = 80
 top_bottom_buffer = 50
 maze_width , maze_height = width - top_bottom_buffer, height - top_bottom_buffer
 maze_start_text = (265, 382)
